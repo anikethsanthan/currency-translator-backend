@@ -1,4 +1,5 @@
 const Transaction = require("../../models/transaction");
+const mongoose = require("mongoose");
 
 const getTransaction = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ const getTransaction = async (req, res) => {
     );
 
     // Build query object
-    const baseQuery = { userId: userId };
+    const baseQuery = { userId: new mongoose.Types.ObjectId(userId) };
     if (category) {
       baseQuery.category = category;
     }
@@ -48,7 +49,7 @@ const getTransaction = async (req, res) => {
 
     // Get total transactions for current month (with category filter if provided)
     const currentMonthQuery = {
-      userId: userId,
+      userId: new mongoose.Types.ObjectId(userId),
       createdAt: {
         $gte: startOfMonth,
         $lte: endOfMonth,
@@ -61,6 +62,23 @@ const getTransaction = async (req, res) => {
     const currentMonthTransactions = await Transaction.countDocuments(
       currentMonthQuery
     );
+
+    const currentMonthExpenseResult = await Transaction.aggregate([
+      {
+        $match: currentMonthQuery,
+      },
+      {
+        $group: {
+          _id: null,
+          totalExpenseINR: { $sum: "$INRconvertedAmount" },
+        },
+      },
+    ]);
+
+    const currentMonthTotalExpenseINR =
+      currentMonthExpenseResult.length > 0
+        ? currentMonthExpenseResult[0].totalExpenseINR
+        : 0;
 
     // Calculate pagination info
     const totalPages = Math.ceil(totalTransactions / limit);
@@ -80,6 +98,7 @@ const getTransaction = async (req, res) => {
           limit,
         },
         currentMonthTransactions,
+        currentMonthTotalExpenseINR,
         filters: {
           category: category || "all",
         },
