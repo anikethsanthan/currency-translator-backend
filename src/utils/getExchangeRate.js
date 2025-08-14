@@ -6,8 +6,8 @@ async function getExchangeRate(
   saveToDb = true
 ) {
   try {
-    // Using the exact API you provided: exchangerate.host
-    const url = `https://api.exchangerate.host/latest?base=${baseCurrency}&symbols=${targetCurrency}`;
+    // Using exchangerate-api.com (free API with no key required)
+    const url = `https://api.exchangerate-api.com/v4/latest/${baseCurrency}`;
 
     const response = await fetch(url);
 
@@ -17,11 +17,7 @@ async function getExchangeRate(
 
     const data = await response.json();
 
-    // Check if the API returned success and rates
-    if (!data.success) {
-      throw new Error(`API Error: ${data.error?.info || "Unknown error"}`);
-    }
-
+    // Check if the target currency rate exists
     if (!data.rates || !data.rates[targetCurrency]) {
       throw new Error(`Exchange rate for ${targetCurrency} not found`);
     }
@@ -48,7 +44,6 @@ async function getExchangeRate(
           baseCurrency: data.base,
           targetCurrency: targetCurrency,
           rate: data.rates[targetCurrency],
-          date: data.date,
         });
 
         await exchangeRateDoc.save();
@@ -202,19 +197,7 @@ async function getExchangeRateHistory(
   }
 }
 
-// Example usage - immediately invoke the function to test
-(async () => {
-  try {
-    console.log("--- Testing Free API ---");
-    await getExchangeRate("USD", "INR");
-
-    console.log("\n--- Testing with different currencies ---");
-    await getExchangeRate("EUR", "USD");
-  } catch (error) {
-    console.error("Failed to get exchange rate:", error);
-  }
-})();
-
+// Export functions for use in other modules
 module.exports = {
   getExchangeRate,
   getExchangeRateWithHost,
