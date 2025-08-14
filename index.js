@@ -10,7 +10,7 @@ const PORT = 7777;
 app.use(cors());
 app.use(express.json());
 app.use(cookieparser());
-app.use("/movie-finder", router);
+app.use("/expense-tracker", router);
 
 connectDb()
   .then(() => {
