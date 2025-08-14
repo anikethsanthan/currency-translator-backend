@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const getTransaction = async (req, res) => {
   try {
-    const userId = req.id;
+    const userId = "689da173eba6cd90af55ca5c";
     const page = parseInt(req.query.page) || 1;
     const category = req.query.category;
     const limit = 10;

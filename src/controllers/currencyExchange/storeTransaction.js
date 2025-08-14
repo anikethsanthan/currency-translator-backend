@@ -5,7 +5,7 @@ const getExchangeRate = require("../../utils/getExchangeRate");
 
 const storeTransaction = async (req, res) => {
   try {
-    const userId = req.id;
+    const userId = "689da173eba6cd90af55ca5c";
     const { amount, currency, category, description } = req.body;
 
     // 1. Check if user is valid

@@ -4,7 +4,7 @@ const getTransaction = require("../controllers/currencyExchange/getTransaction")
 
 const transactionRouter = require("express").Router();
 
-transactionRouter.post("/store-transaction", authenticate, storeTransaction);
-transactionRouter.get("/get-transaction", authenticate, getTransaction);
+transactionRouter.post("/store-transaction", storeTransaction);
+transactionRouter.get("/get-transaction", getTransaction);
 
 module.exports = transactionRouter;
